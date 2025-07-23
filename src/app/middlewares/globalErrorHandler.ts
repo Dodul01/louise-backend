@@ -54,10 +54,17 @@ const globalErrorHandler: ErrorRequestHandler = (err: any, req: Request, res: Re
                 message: err?.message,
             },
         ];
+
+        if (err.message.includes('email_1 dup key')) {
+            statusCode = 409;
+            message = "Email already exsist.";
+        }
+        console.log("inside normal error");
     }
 
     //ultimate return
     return res.status(statusCode).json({
+        statusCode,
         success: false,
         message,
         errorSources,

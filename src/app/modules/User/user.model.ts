@@ -16,7 +16,15 @@ const userSchema = new Schema<TUser>({
     password: {
         type: String,
         required: true,
-    }
+    },
+    isValidate: {
+        type: Boolean,
+        default: false
+    },
+    isAgreeWithTermsAndConditions: {
+        type: Boolean,
+        default: false
+    },
 },
     { timestamps: true }
 );

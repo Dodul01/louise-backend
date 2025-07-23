@@ -14,7 +14,7 @@ const handleDuplicateError = (err: any): TGenericErrorResponse => {
             message: `${extractedMessage} is already exists`,
         },
     ];
-
+    
     const statusCode = 400;
 
     return {
