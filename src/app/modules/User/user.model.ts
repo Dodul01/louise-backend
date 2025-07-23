@@ -17,7 +17,7 @@ const userSchema = new Schema<TUser>({
         type: String,
         required: true,
     },
-    isValidate: {
+    isVerified: {
         type: Boolean,
         default: false
     },

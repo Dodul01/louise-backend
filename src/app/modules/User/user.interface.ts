@@ -2,6 +2,6 @@ export interface TUser {
     name: string;
     email: string;
     password: string | undefined;
-    isValidate?: boolean;
+    isVerified?: boolean;
     isAgreeWithTermsAndConditions?: boolean;
 }
