@@ -19,6 +19,11 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
     }
 }
 
+const forgetPassword = async () => {
+
+}
+
 export const AuthControllers = {
-    loginUser
+    loginUser,
+    forgetPassword
 }
