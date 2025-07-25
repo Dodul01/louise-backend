@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express"
 import { AuthServices } from "./auth.service";
 import catchAsync from "../../utils/catchAsync";
-import { forgetPasswordValidationSchema } from "./auth.validation";
+import { forgetPasswordValidationSchema, resetPasswordValidationSchema } from "./auth.validation";
 import sendResponse from "../../utils/sendResponse";
 import httpStatus from 'http-status';
 
@@ -36,7 +36,22 @@ const forgetPassword = catchAsync(async (req: Request, res: Response) => {
     })
 });
 
+const resetPassword = catchAsync(async (req: Request, res: Response) => {
+    const { jwtToken, newPassword } = req.body;
+
+    const zodPerser = resetPasswordValidationSchema.parse({ jwtToken, newPassword })
+    const result = await AuthServices.resetPassword(zodPerser.jwtToken, zodPerser.newPassword);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Password reset succesfully.",
+        data: result
+    })
+});
+
 export const AuthControllers = {
     loginUser,
-    forgetPassword
+    forgetPassword,
+    resetPassword
 }

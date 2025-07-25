@@ -5,6 +5,7 @@ export const createToken = (JwtPayload: {
     name: string;
     email: string;
     isVerified: boolean;
+    isDeleted: boolean;
 },
     secret: string,
     expiresIn: string | number,

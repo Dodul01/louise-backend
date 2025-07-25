@@ -7,5 +7,6 @@ export interface TUser {
     giftSent: number;
     giftReceived : number;
     isBlocked: boolean;
+    isDeleted: boolean;
     role: "vendor" | "admin"
 }

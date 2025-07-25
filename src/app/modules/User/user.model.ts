@@ -3,7 +3,7 @@ import { TUser } from "./user.interface";
 import bcrypt from 'bcrypt';
 import config from "../../config";
 
-enum UserRole {
+export enum UserRole {
     ADMIN = 'admin',
     VENDOR = 'vendor',
 }
@@ -36,6 +36,10 @@ const userSchema = new Schema<TUser>({
         default: false,
     },
     isVerified: {
+        type: Boolean,
+        default: false
+    },
+    isDeleted: {
         type: Boolean,
         default: false
     },

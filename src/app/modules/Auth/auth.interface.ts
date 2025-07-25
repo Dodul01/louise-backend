@@ -6,3 +6,8 @@ export type TLoginUser = {
 export type TForgetPassword = {
     email: string;
 }
+
+export type TResetPassword = {
+    jwtToken: string;
+    newPassword: string;
+}

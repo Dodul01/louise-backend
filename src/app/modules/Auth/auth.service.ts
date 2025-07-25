@@ -7,6 +7,8 @@ import config from "../../config";
 import { sendEmail } from "../../utils/sendEmail";
 import generateOTP from "../../utils/generateOTP";
 import { VerifyEmail } from "../VerifyEmail/verifyEmail.model";
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import httpStatus from 'http-status';
 
 const signInUser = async (payload: TLoginUser) => {
     const { email, password } = payload;
@@ -44,7 +46,8 @@ const signInUser = async (payload: TLoginUser) => {
         _id: user._id.toString(),
         name: user.name,
         email: user.email,
-        isVerified: user.isVerified ?? false
+        isVerified: user.isVerified ?? false,
+        isDeleted: user.isDeleted
     }
 
     const jwtToken = createToken(jwtPayload, config.Jwt_Token as string, config.jwt_access_expiry as string);
@@ -68,12 +71,56 @@ const forgetPassword = async (email: string) => {
         // Step 2: if exsist then send the otp 
 
         await sendEmail(email, "Reset Password - OTP", html);
+
+        const jwtPayload = {
+            name: record.name,
+            _id: record._id.toString(),
+            email: record.email,
+            isVerified: record.isVerified ?? false,
+            isDeleted: record.isDeleted
+        }
+
+        const jwtToken = createToken(jwtPayload, config.Jwt_Token as string, config.jwt_access_expiry as string);
+
+        return { jwtToken }
     }
 }
 
-const resetPassword = async () => {
+const resetPassword = async (jwtToken: string, newPassword: string) => {
+    const token = jwtToken?.trim();
 
-}
+    // Step 1: Validate token format
+    if (!token || token.split('.').length !== 3) {
+        throw new AppError(httpStatus.UNAUTHORIZED, 'Malformed or missing JWT token');
+    }
+
+    // Step 2: Verify token
+    let decoded;
+    try {
+        decoded = jwt.verify(token, config.Jwt_Token as string);
+
+        if (typeof decoded !== 'string' && '_id' in decoded) {
+            const { _id } = decoded as JwtPayload & { _id: string };
+            const user = await User.findById(_id)
+
+            if (!user) {
+                throw new AppError(httpStatus.NOT_FOUND, "User not found")
+            }
+
+
+            // Step 4: Update and save user
+            user.password = newPassword;
+            await user.save();
+        } else {
+            throw new AppError(httpStatus.UNAUTHORIZED, 'Invalid token payload');
+        }
+
+    } catch (err: any) {
+        console.error("JWT verification failed:", err);
+        throw new AppError(httpStatus.UNAUTHORIZED, err.message);
+    }
+};
+
 
 export const AuthServices = {
     signInUser,
