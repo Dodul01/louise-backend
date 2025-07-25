@@ -4,4 +4,8 @@ export interface TUser {
     password: string | undefined;
     isVerified?: boolean;
     isAgreeWithTermsAndConditions?: boolean;
+    giftSent: number;
+    giftReceived : number;
+    isBlocked: boolean;
+    role: "vendor" | "admin"
 }

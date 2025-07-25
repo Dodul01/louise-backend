@@ -11,3 +11,10 @@ export const loginValidationSchema = z.object({
     }).min(6, { message: 'Password must be at least 6 characters.' })
         .max(20, { message: 'Password cannot be more than 20 characters.' }),
 });
+
+export const forgetPasswordValidationSchema = z.object({
+    email: z.string({
+        required_error: 'Email is required.',
+        invalid_type_error: 'Email must be a string.',
+    }).email({ message: 'Invalid email.' })
+})

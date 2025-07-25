@@ -8,7 +8,15 @@ import httpStatus from 'http-status';
 const createUser = catchAsync(async (req: Request, res: Response) => {
     const user = req.body;
     const zodPerserUser = userValidation.userValidationSchema.parse(user);
-    const result = await UserService.createUserIntoDB(zodPerserUser);
+    const userToCreate = {
+        ...zodPerserUser,
+        giftSent: 0,
+        giftReceived: 0,
+        isBlocked: false,
+        role: "vendor" as "vendor", 
+    };
+    
+    const result = await UserService.createUserIntoDB(userToCreate);
 
     sendResponse(res, {
         statusCode: httpStatus.OK,

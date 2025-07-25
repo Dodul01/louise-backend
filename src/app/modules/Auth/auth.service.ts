@@ -4,6 +4,9 @@ import { TLoginUser } from "./auth.interface";
 import bcrypt from "bcrypt"
 import { createToken } from "./auth.utils";
 import config from "../../config";
+import { sendEmail } from "../../utils/sendEmail";
+import generateOTP from "../../utils/generateOTP";
+import { VerifyEmail } from "../VerifyEmail/verifyEmail.model";
 
 const signInUser = async (payload: TLoginUser) => {
     const { email, password } = payload;
@@ -45,10 +48,35 @@ const signInUser = async (payload: TLoginUser) => {
     }
 
     const jwtToken = createToken(jwtPayload, config.Jwt_Token as string, config.jwt_access_expiry as string);
-    
+
     return { jwtToken }
 }
 
+const forgetPassword = async (email: string) => {
+    // Step 1: Check if the user exist 
+    const record = await User.findOne({ email });
+
+    if (record) {
+        const otp = generateOTP(4);
+        await VerifyEmail.create({ userId: record._id, otp, email });
+        const html = `
+        <h2>Email Verification</h2>
+        <p>Your verification code is:</p>
+        <h1>${otp}</h1>
+        <p>This code will expire in 5 minutes.</p>
+    `;
+        // Step 2: if exsist then send the otp 
+
+        await sendEmail(email, "Reset Password - OTP", html);
+    }
+}
+
+const resetPassword = async () => {
+
+}
+
 export const AuthServices = {
-    signInUser
+    signInUser,
+    forgetPassword,
+    resetPassword
 }

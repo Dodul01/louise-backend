@@ -1,4 +1,5 @@
 import AppError from "../../errors/AppError";
+import generateOTP from "../../utils/generateOTP";
 import { sendEmail } from "../../utils/sendEmail";
 import { User } from "../User/user.model";
 import { VerifyEmail } from "./verifyEmail.model";
@@ -6,15 +7,16 @@ import httpstatus from "http-status";
 
 const sendVerifyEmail = async (userId: string, email: string) => {
   // generate otp
-  const otp = Math.floor(1000 + Math.random() * 9000).toString();
+  // const otp = Math.floor(1000 + Math.random() * 9000).toString();
+  const otp = generateOTP(4);
 
-  await VerifyEmail.create({ userId, otp , email});
+  await VerifyEmail.create({ userId, otp, email });
 
   const html = `
         <h2>Email Verification</h2>
         <p>Your verification code is:</p>
         <h1>${otp}</h1>
-        <p>This code will expire in 10 minutes.</p>
+        <p>This code will expire in 5 minutes.</p>
     `;
 
   await sendEmail(email, "Verify Your Email", html);
@@ -45,7 +47,7 @@ const verifyOTP = async (email: string, otp: string) => {
       throw new AppError(httpstatus.NOT_FOUND, "User not found.");
     }
 
-    // Step 4: Remove OTP record
+    // Step 4: Remove OTP record 
     await VerifyEmail.deleteOne({ email });
 
     return {
@@ -58,7 +60,6 @@ const verifyOTP = async (email: string, otp: string) => {
     throw error;
   }
 };
-
 
 export const VerifyEmailService = {
   sendVerifyEmail,

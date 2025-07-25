@@ -3,6 +3,12 @@ import { TUser } from "./user.interface";
 import bcrypt from 'bcrypt';
 import config from "../../config";
 
+enum UserRole {
+    ADMIN = 'admin',
+    VENDOR = 'vendor',
+}
+
+
 const userSchema = new Schema<TUser>({
     name: {
         type: String,
@@ -17,6 +23,18 @@ const userSchema = new Schema<TUser>({
         type: String,
         required: true,
     },
+    giftSent: {
+        type: Number,
+        default: 0,
+    },
+    giftReceived: {
+        type: Number,
+        default: 0,
+    },
+    isBlocked: {
+        type: Boolean,
+        default: false,
+    },
     isVerified: {
         type: Boolean,
         default: false
@@ -25,6 +43,10 @@ const userSchema = new Schema<TUser>({
         type: Boolean,
         default: false
     },
+    role: {
+        type: String,
+        enum: Object.values(UserRole),
+    }
 },
     { timestamps: true }
 );
