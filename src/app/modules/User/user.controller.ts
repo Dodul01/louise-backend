@@ -15,6 +15,7 @@ const createUser = catchAsync(async (req: Request, res: Response) => {
         isBlocked: false,
         isDeleted: false,
         role: "vendor" as "vendor", 
+        serialId: "",
     };
     
     const result = await UserService.createUserIntoDB(userToCreate);
