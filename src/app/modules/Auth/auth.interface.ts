@@ -8,6 +8,6 @@ export type TForgetPassword = {
 }
 
 export type TResetPassword = {
-    jwtToken: string;
+    // jwtToken: string;
     newPassword: string;
 }

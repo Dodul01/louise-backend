@@ -10,6 +10,11 @@ export enum UserRole {
 
 
 const userSchema = new Schema<TUser>({
+    serialId: {
+      type: String,
+      required: [true, 'ID is required'],
+      unique: true,
+    },
     name: {
         type: String,
         required: true

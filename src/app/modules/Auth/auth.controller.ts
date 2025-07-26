@@ -37,8 +37,8 @@ const forgetPassword = catchAsync(async (req: Request, res: Response) => {
 });
 
 const resetPassword = catchAsync(async (req: Request, res: Response) => {
-    const { jwtToken, newPassword } = req.body;
-
+    const { newPassword } = req.body;
+    const jwtToken = req.headers.authorization;
     const zodPerser = resetPasswordValidationSchema.parse({ jwtToken, newPassword })
     const result = await AuthServices.resetPassword(zodPerser.jwtToken, zodPerser.newPassword);
 
