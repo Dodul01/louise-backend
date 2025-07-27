@@ -38,6 +38,19 @@ const createVenue = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
+const getAllVenues = catchAsync(async (req: Request, res: Response) => {
+    const result = await VenueServices.getAllVenuesFromDB(req.query);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Venues fetched successfully.",
+        data: result.data,
+        meta: result.meta
+    })
+})
+
 export const VenueController = {
     createVenue,
+    getAllVenues
 };

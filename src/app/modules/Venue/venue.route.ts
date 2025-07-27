@@ -6,5 +6,6 @@ import auth from '../../middlewares/auth';
 const router = express.Router();
 
 router.post('/create-venue', auth('vendor'), upload.single('venue_image'), VenueController.createVenue);
+router.get('/get-all-venues', auth('vendor', 'admin'), VenueController.getAllVenues);
 
 export const VenueRouter = router;
