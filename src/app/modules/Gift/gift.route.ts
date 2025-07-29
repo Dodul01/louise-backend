@@ -7,5 +7,7 @@ const router = express.Router();
 router.post('/create-gift-payment', auth('vendor'), GiftController.createGiftPayment);
 router.post('/confirm-payment', auth('vendor'), GiftController.confirmPayment);
 router.post('/redeem-gift/:gift_id', auth('vendor'), GiftController.redeemGift);
+router.post('/my-gift/:user_id', auth('vendor'), GiftController.getMyReceivedGifts);
+router.post('/my-sent-gift/:user_id', auth('vendor'), GiftController.getMySendedGifts);
 
 export const GiftRouter = router;

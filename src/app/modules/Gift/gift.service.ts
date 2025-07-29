@@ -1,82 +1,11 @@
 import Stripe from "stripe";
 import QRCode from "qrcode";
 import { GiftModel } from "./gift.model";
+import { User } from "../User/user.model";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET!, {
     apiVersion: "2025-06-30.basil",
 });
-
-//  OLD ONE 
-// const createGiftPayment = async (data: any) => {
-//     const paymentIntent = await stripe.paymentIntents.create({
-//         amount: data.amount * 100,
-//         currency: "gbp",
-//         payment_method_types: ["card"],
-//     });
-
-//     const gift = await GiftModel.create({
-//         ...data,
-//         status: "pending",
-//         transaction_id: paymentIntent.id,
-//     });
-
-//     return {
-//         client_secret: paymentIntent.client_secret,
-//         gift_id: gift._id,
-//     };
-// };
-
-// NEW code for web 
-
-// old meta data 
-// const createGiftPayment = async (data: any) => {
-//     const session = await stripe.checkout.sessions.create({
-//         payment_method_types: ['card'],
-//         mode: 'payment',
-//         line_items: [
-//             {
-//                 price_data: {
-//                     currency: 'gbp',
-//                     product_data: {
-//                         name: `${data.gift_type} Gift for ${data.recipient_name}`,
-//                     },
-//                     unit_amount: data.amount * 100,
-//                 },
-//                 quantity: 1,
-//             },
-//         ],
-//         success_url: `http://127.0.0.1:5500/frontend/success.html?session_id={CHECKOUT_SESSION_ID}`,
-//         cancel_url: `http://127.0.0.1:5500/frontend/cancel.html`,
-//         metadata: {
-//             sender_name: data.sender_name,
-//             recipient_name: data.recipient_name,
-//             phone_number: data.phone_number,
-//             email: data.email || '',
-//             venue_name: data.venue_name,
-//             venue_id: data.venue_id,
-//             gift_type: data.gift_type,
-//         },
-//     });
-
-//     console.log(data);
-
-
-//     // Save pending gift in DB with session.id
-//     const gift = await GiftModel.create({
-//         ...data,
-//         venue_id: data.venue_id,
-//         transaction_id: session.id,
-//         status: 'pending',
-//     });
-//     // generate qr code 
-//     const qrCode: any = await QRCode.toDataURL(`http://localhost:5000/api/redeem-gift/${gift._id}`);
-
-//     await GiftModel.findByIdAndUpdate(gift._id, { qr_code: qrCode })
-
-
-//     return { url: session.url, gift_id: gift._id };
-// };
-
 
 // new meta data 
 const createGiftPayment = async (data: any) => {
@@ -120,6 +49,11 @@ const createGiftPayment = async (data: any) => {
         status: 'pending',
     });
 
+    // increse gift sent
+    await User.findByIdAndUpdate(data.sender_id, { $inc: { giftSent: 1 } });
+    // increse gift received
+    await User.findByIdAndUpdate(data.recipient_id, { $inc: { giftReceived: 1 } });
+
     // Generate QR Code
     const qrCode = await QRCode.toDataURL(`http://localhost:5000/api/redeem-gift/${gift._id}`);
     await GiftModel.findByIdAndUpdate(gift._id, { qr_code: qrCode });
@@ -130,7 +64,7 @@ const createGiftPayment = async (data: any) => {
 const confirmPayment = async (transaction_id: string) => {
     const gift = await GiftModel.findOne({ transaction_id });
     if (!gift) throw new Error("Gift not found");
-    console.log("STRIPE_SECRET", process.env.STRIPE_SECRET);
+     console.log("STRIPE_SECRET", process.env.STRIPE_SECRET);
     const qrCode = await QRCode.toDataURL(`http://localhost:5000/api/redeem-gift/${gift._id}`);
     gift.qr_code = qrCode;
     gift.status = "paid";
@@ -141,6 +75,10 @@ const confirmPayment = async (transaction_id: string) => {
 
 const redeemGift = async (giftId: string) => {
     const gift = await GiftModel.findById(giftId);
+
+    // todo: if jwt token and user id does not match, return an error
+
+
     if (!gift) throw new Error("Gift not found");
     if (gift.status === "redeemed") throw new Error("Gift already redeemed");
 
@@ -151,9 +89,27 @@ const redeemGift = async (giftId: string) => {
     return gift;
 };
 
+const getMySendedGiftsFromDB = async (senderId: string) => {
+    const sendedGifts = await GiftModel.find({ sender_id: senderId }).sort({ createdAt: -1 });
+
+    // todo: 
+    // if user jwt token and the user id does not match, return an error
+
+    return sendedGifts;
+}
+
+const getMyReceivedGiftsFromDB = async (recipientId: string) => {
+    const receivedGifts = await GiftModel.find({ recipient_id: recipientId }).sort({ createdAt: -1 })
+    // todo: 
+    // if user jwt token and the user id does not match, return an error
+
+    return receivedGifts;
+}
 
 export const GiftService = {
     createGiftPayment,
     confirmPayment,
-    redeemGift
+    redeemGift,
+    getMySendedGiftsFromDB,
+    getMyReceivedGiftsFromDB
 }

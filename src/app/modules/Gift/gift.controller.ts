@@ -3,6 +3,7 @@ import httpStatus from "http-status";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import { GiftService } from "./gift.service";
+import { get } from "http";
 
 export const GiftController = {
     createGiftPayment: catchAsync(async (req: Request, res: Response) => {
@@ -39,4 +40,28 @@ export const GiftController = {
             data: result,
         });
     }),
+
+    getMySendedGifts: catchAsync(async (req: Request, res: Response) => {
+        const { user_id } = req.params;
+        const result = await GiftService.getMySendedGiftsFromDB(user_id);
+
+        sendResponse(res, {
+            statusCode: httpStatus.OK,
+            success: true,
+            message: "Gifts fetched successfully.",
+            data: result,
+        });
+    }),
+
+    getMyReceivedGifts: catchAsync(async (req: Request, res: Response) => {
+        const { user_id } = req.params;
+        const result = await GiftService.getMyReceivedGiftsFromDB(user_id);
+
+        sendResponse(res, {
+            statusCode: httpStatus.OK,
+            success: true,
+            message: "Gifts fetched successfully.",
+            data: result,
+        });
+    })
 };
