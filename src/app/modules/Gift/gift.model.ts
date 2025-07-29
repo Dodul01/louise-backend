@@ -2,11 +2,13 @@ import mongoose from "mongoose";
 
 const giftSchema = new mongoose.Schema({
     sender_name: String,
+    sender_id: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    recipient_id: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     recipient_name: String,
     phone_number: String,
     email: String,
     personal_message: String,
-    venue_name: String,
+    gift_id: { type: mongoose.Schema.Types.ObjectId, ref: "Venue" },
     gift_type: { type: String, enum: ["coffee", "latte", "pastry", "cookies", "custom"] },
     amount: Number,
     payment_method: { type: String, enum: ["apple_pay", "google_pay", "card"] },
