@@ -5,9 +5,48 @@ import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import notFound from './app/middlewares/notFound';
 import router from './app/routes';
 import path from 'path';
+import Stripe from 'stripe';
+import { GiftModel } from './app/modules/Gift/gift.model';
+import QRCode from "qrcode";
 // import router from './app/routes';
 
+//   fond-endear-zippy-wisely
+//    Done! The Stripe CLI is configured for your account with account id acct_1PcPm62MP0L90Yjv
+
+//    Please note: this key will expire after 90 days, at which point you'll need to re-authenticate.
+//   how to run stripe in cli >"C:\Users\allen\Downloads\stripe_1.28.0_windows_x86_64\stripe.exe" login
+
+//  whsec_d0c446948ffb18c08edd304e3608a34acad013b585fe382be606e992b2b826cb
+  
+
+
 const app: Application = express();
+
+app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+    const sig = req.headers['stripe-signature']!;
+    let event;
+
+    try {
+        event = Stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET!);
+    } catch (err: any) {
+        return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    if (event.type === 'checkout.session.completed') {
+        const session = event.data.object as Stripe.Checkout.Session;
+        const transaction_id = session.id;
+
+        const gift = await GiftModel.findOne({ transaction_id });
+        if (gift) {
+            gift.status = 'paid';
+            gift.qr_code = await QRCode.toDataURL(`https://yourdomain.com/redeem-gift/${gift._id}`);
+            await gift.save();
+        }
+    }
+
+    res.status(200).send('Received');
+});
+
 
 // parsers
 app.use(express.json());
@@ -24,6 +63,7 @@ app.use('/api/v1', router);
 app.get('/', (req: Request, res: Response) => {
     res.send({ message: "Server is running" })
 })
+
 
 // Serve static files from the "uploads" directory
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));

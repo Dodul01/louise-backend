@@ -22,6 +22,8 @@ const getAllVenuesFromDB = async (query: RequestQuery) => {
     return { meta, data: venues };
 }
 
+
+
 export const VenueServices = {
     createVenueIntoDB,
     getAllVenuesFromDB

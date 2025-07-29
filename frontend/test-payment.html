@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Test Gift</title>
+</head>
+
+<body>
+    <h2>Send a Gift</h2>
+    <button onclick="sendGift()">Send Gift</button>
+
+    <script>
+        async function sendGift() {
+            const res = await fetch('http://localhost:5001/api/v1/gift/create-gift-payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer YOUR_VENDOR_JWT_TOKEN'
+                },
+                body: JSON.stringify({
+                    sender_name: 'Alice',
+                    recipient_name: 'Bob',
+                    phone_number: '0123456789',
+                    email: 'bob@example.com',
+                    personal_message: 'Enjoy this!',
+                    venue_name: 'Test Cafe',
+                    gift_type: 'coffee',
+                    amount: 5,
+                    payment_method: 'card'
+                })
+            });
+
+            const data = await res.json();
+            if (data?.data?.url) {
+                window.location.href = data.data.url;
+            } else {
+                alert('Error creating payment');
+            }
+        }
+    </script>
+</body>
+
+</html>
