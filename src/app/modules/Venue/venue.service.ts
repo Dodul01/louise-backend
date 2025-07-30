@@ -11,6 +11,7 @@ const createVenueIntoDB = async (payload: TVenue) => {
     return newVenue;
 };
 
+
 const getAllVenuesFromDB = async (query: RequestQuery) => {
     const venueQuery = Venue.find({ isDeleted: false }).sort({ createdAt: -1 });
     const queryBuilder = new QueryBuilder(venueQuery, query);
@@ -23,8 +24,14 @@ const getAllVenuesFromDB = async (query: RequestQuery) => {
 }
 
 
+const getAllVenuesWalletFromDB = async (venueId: string) => {
+    console.log(venueId);
+
+}
+
 
 export const VenueServices = {
     createVenueIntoDB,
-    getAllVenuesFromDB
+    getAllVenuesFromDB,
+    getAllVenuesWalletFromDB
 };

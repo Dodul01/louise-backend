@@ -4,6 +4,7 @@ import { UserService } from "./user.service";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import httpStatus from 'http-status';
+import { VenueServices } from "../Venue/venue.service";
 
 const createUser = catchAsync(async (req: Request, res: Response) => {
     const user = req.body;
@@ -14,10 +15,10 @@ const createUser = catchAsync(async (req: Request, res: Response) => {
         giftReceived: 0,
         isBlocked: false,
         isDeleted: false,
-        role: "vendor" as "vendor", 
+        role: "vendor" as "vendor",
         serialId: "",
     };
-    
+
     const result = await UserService.createUserIntoDB(userToCreate);
 
     sendResponse(res, {
@@ -28,6 +29,31 @@ const createUser = catchAsync(async (req: Request, res: Response) => {
     })
 })
 
+const getAllUsers = catchAsync(async (req: Request, res: Response) => {
+    const result = await UserService.getAllUsers();
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Users fetched successfully.",
+        data: result,
+    })
+})
+
+const getAllVenuesWallet = catchAsync(async (req: Request, res: Response) => {
+    const { venueId } = req.params;
+    const result = await VenueServices.getAllVenuesWalletFromDB(venueId);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Venues fetched successfully.",
+        data: result
+    })
+})
+
 export const UserControllers = {
     createUser,
+    getAllUsers,
+    getAllVenuesWallet
 }

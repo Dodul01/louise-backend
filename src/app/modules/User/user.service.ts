@@ -8,6 +8,13 @@ const createUserIntoDB = async (user: TUser) => {
     return result;
 };
 
+const getAllUsers = async () => {
+    const users = await User.find({}).sort({ createdAt: -1 });
+    return users;
+}
+
 export const UserService = {
     createUserIntoDB,
+    getAllUsers
 };
+
