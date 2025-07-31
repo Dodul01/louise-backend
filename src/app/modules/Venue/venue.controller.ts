@@ -48,7 +48,7 @@ const getAllVenues = catchAsync(async (req: Request, res: Response) => {
         data: result.data,
         meta: result.meta
     })
-})
+});
 
 const getAllVenuesWallet = catchAsync(async (req: Request, res: Response) => {
     const result = await VenueServices.getAllVenuesWalletFromDB();
@@ -59,10 +59,23 @@ const getAllVenuesWallet = catchAsync(async (req: Request, res: Response) => {
         message: "Venues wallet fetched successfully.",
         data: result
     })
+});
+
+const getVenueTransactions = catchAsync(async (req: Request, res: Response) => {
+    const venueId = req.params.venueId;
+    const result = await VenueServices.getVenueTransactionsFromDB(venueId);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Venue transactions fetched successfully.",
+        data: result
+    })
 })
 
 export const VenueController = {
     createVenue,
     getAllVenues,
-    getAllVenuesWallet
+    getAllVenuesWallet,
+    getVenueTransactions
 };

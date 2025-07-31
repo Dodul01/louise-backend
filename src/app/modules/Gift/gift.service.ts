@@ -175,11 +175,9 @@ const stripe = new Stripe(config.STRIPE_SECRET as string, {
     apiVersion: '2025-06-30.basil',
 });
 
-const createGiftPayment = async (data: any, vendorId: string, item_id: string) => {
+const createGiftPayment = async (data: any) => {
     const gift = await GiftModel.create({
         ...data,
-        vendor: vendorId,
-        item: item_id,
         status: 'pending',
     });
 

@@ -1,8 +1,11 @@
+import mongoose from "mongoose";
 import QueryBuilder from "../../builder/QueryBuilder";
 import { RequestQuery } from "../../types/common";
 import { GiftModel } from "../Gift/gift.model";
 import { TVenue } from "./venue.interface";
 import { Venue, VenueWallet } from "./venue.model";
+import AppError from "../../errors/AppError";
+import httpStatus from 'http-status';
 
 const createVenueIntoDB = async (payload: TVenue) => {
     const isExists = await Venue.findOne({ serialId: payload.serialId });
@@ -11,7 +14,6 @@ const createVenueIntoDB = async (payload: TVenue) => {
     const newVenue = await Venue.create(payload);
     return newVenue;
 };
-
 
 const getAllVenuesFromDB = async (query: RequestQuery) => {
     const venueQuery = Venue.find({ isDeleted: false }).sort({ createdAt: -1 });
@@ -24,7 +26,7 @@ const getAllVenuesFromDB = async (query: RequestQuery) => {
     return { meta, data: venues };
 }
 
-export const getAllVenuesWalletFromDB = async () => {
+const getAllVenuesWalletFromDB = async () => {
     /* 
         STEP 1: get all venues 
         STEP 2: get all gifts
@@ -79,11 +81,50 @@ export const getAllVenuesWalletFromDB = async () => {
     return wallets;
 };
 
+const getVenueTransactionsFromDB = async (venueId: string) => {
+    if (!mongoose.Types.ObjectId.isValid(venueId)) {
+        throw new AppError(httpStatus.BAD_REQUEST, 'Invalid venueId');
+    }
+
+    const venue = await Venue.findById(venueId).lean();
+    if (!venue) throw new AppError(httpStatus.NOT_FOUND, 'Venue not found');
+
+    // Map item_name -> item_id
+    const menuMap = venue.menu.reduce((acc: Record<string, string>, item: any) => {
+        acc[item.item_name] = item._id.toString();
+        return acc;
+    }, {});
+
+    const itemIds = Object.values(menuMap);
+
+    // Find gifts with matching gift_id (assuming gift_id stores menu item id)
+    const gifts = await GiftModel.find({
+        gift_id: { $in: itemIds }
+    }).lean();
+
+    // Format the output per your spec
+    return gifts.map(gift => {
+        // find item name by gift_id (reverse lookup)
+        const item = gift.gift_id
+            ? venue.menu.find((item: any) => item._id.toString() === String(gift.gift_id))
+            : null;
 
 
+        return {
+            serialId: venue.serialId,
+            venueName: venue.name,
+            paymentFrom: gift.sender_name,
+            broughtItem: item?.item_name,
+            paymentAmount: gift.amount,
+            date: gift.created_at,
+            transactionId: gift.transaction_id,
+        };
+    });
+};
 
 export const VenueServices = {
     createVenueIntoDB,
     getAllVenuesFromDB,
-    getAllVenuesWalletFromDB
+    getAllVenuesWalletFromDB,
+    getVenueTransactionsFromDB
 };

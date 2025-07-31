@@ -81,7 +81,7 @@ const stripe = new Stripe(config.STRIPE_SECRET as string, {
 export const GiftController = {
     // 1. Save gift info only
     createGiftPayment: catchAsync(async (req: Request, res: Response) => {
-        const result = await GiftService.createGiftPayment(req.body, req.user.id);
+        const result = await GiftService.createGiftPayment(req.body);
 
         sendResponse(res, {
             statusCode: httpStatus.OK,
