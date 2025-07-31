@@ -14,3 +14,15 @@ export interface IGift {
     redeemed_at?: Date;
     created_at: Date;
 }
+
+export interface StripeGiftMetadata {
+    sender_name: string;
+    sender_id: string;
+    recipient_name: string;
+    recipient_id: string;
+    phone_number: string;
+    email: string;
+    personal_message: string;
+    venue_id: string;
+    gift_type: string;
+}

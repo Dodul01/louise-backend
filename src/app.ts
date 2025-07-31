@@ -17,35 +17,12 @@ import QRCode from "qrcode";
 //   how to run stripe in cli >"C:\Users\allen\Downloads\stripe_1.28.0_windows_x86_64\stripe.exe" login
 
 //  whsec_d0c446948ffb18c08edd304e3608a34acad013b585fe382be606e992b2b826cb
-  
+
 
 
 const app: Application = express();
-
-app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
-    const sig = req.headers['stripe-signature']!;
-    let event;
-
-    try {
-        event = Stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET!);
-    } catch (err: any) {
-        return res.status(400).send(`Webhook Error: ${err.message}`);
-    }
-
-    if (event.type === 'checkout.session.completed') {
-        const session = event.data.object as Stripe.Checkout.Session;
-        const transaction_id = session.id;
-
-        const gift = await GiftModel.findOne({ transaction_id });
-        if (gift) {
-            gift.status = 'paid';
-            gift.qr_code = await QRCode.toDataURL(`https://yourdomain.com/redeem-gift/${gift._id}`);
-            await gift.save();
-        }
-    }
-
-    res.status(200).send('Received');
-});
+// ✅ Webhook route must come BEFORE express.json()
+app.use('/api/v1/gift/webhook', express.raw({ type: 'application/json' }));
 
 
 // parsers

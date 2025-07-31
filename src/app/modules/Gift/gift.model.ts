@@ -12,7 +12,7 @@ const giftSchema = new mongoose.Schema({
     gift_type: { type: String, enum: ["coffee", "latte", "pastry", "cookies", "custom"] },
     amount: Number,
     payment_method: { type: String, enum: ["apple_pay", "google_pay", "card"] },
-    status: { type: String, enum: ["pending", "paid", "redeemed"], default: "pending" },
+    status: { type: String, enum: ["pending", "paid", "redeemed", "failed"], default: "pending" },
     transaction_id: String,
     qr_code: String,
     redeemed_at: Date,

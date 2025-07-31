@@ -51,13 +51,12 @@ const getAllVenues = catchAsync(async (req: Request, res: Response) => {
 })
 
 const getAllVenuesWallet = catchAsync(async (req: Request, res: Response) => {
-    const { venueId } = req.params;
-    const result = await VenueServices.getAllVenuesWalletFromDB(venueId);
+    const result = await VenueServices.getAllVenuesWalletFromDB();
 
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: "Venues fetched successfully.",
+        message: "Venues wallet fetched successfully.",
         data: result
     })
 })

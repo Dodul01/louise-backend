@@ -40,20 +40,8 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
     })
 })
 
-const getAllVenuesWallet = catchAsync(async (req: Request, res: Response) => {
-    const { venueId } = req.params;
-    const result = await VenueServices.getAllVenuesWalletFromDB(venueId);
-
-    sendResponse(res, {
-        statusCode: httpStatus.OK,
-        success: true,
-        message: "Venues fetched successfully.",
-        data: result
-    })
-})
 
 export const UserControllers = {
     createUser,
     getAllUsers,
-    getAllVenuesWallet
 }

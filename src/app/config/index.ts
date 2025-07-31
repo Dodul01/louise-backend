@@ -11,4 +11,5 @@ export default {
     jwt_access_expiry: process.env.JWT_ACCESS_EXPIRES_IN as string,
     NODE_ENV: process.env.NODE_ENV,
     STRIPE_SECRET: process.env.STRIPE_SECRET,
+    STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
 };
