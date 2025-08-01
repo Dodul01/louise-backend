@@ -4,7 +4,6 @@ import { UserService } from "./user.service";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import httpStatus from 'http-status';
-import { VenueServices } from "../Venue/venue.service";
 
 const createUser = catchAsync(async (req: Request, res: Response) => {
     const user = req.body;
@@ -38,10 +37,36 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
         message: "Users fetched successfully.",
         data: result,
     })
+});
+
+const blockUser = catchAsync(async (req: Request, res: Response) => {
+    const userId = req.body.userId;
+    const result = await UserService.blockUserFormDB(userId);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "User block succesfully.",
+        data: result,
+    })
+})
+
+const getSingleUser = catchAsync(async (req: Request, res: Response) => {
+    const userId = req.params.userId;
+    const result = await UserService.getSingleUserForDB(userId);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "User feched succesfully.",
+        data: result,
+    })
 })
 
 
 export const UserControllers = {
     createUser,
     getAllUsers,
+    blockUser,
+    getSingleUser
 }

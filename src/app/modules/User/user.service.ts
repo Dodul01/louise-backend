@@ -13,8 +13,23 @@ const getAllUsers = async () => {
     return users;
 }
 
+const getSingleUserForDB = async (userId: string) => {
+    const user = await User.findOne({ _id: userId });
+    return user;
+}
+
+const blockUserFormDB = async (userId: string) => {
+    const result = await User.findByIdAndUpdate(
+        userId,
+        { $set: { isBlocked: true } },
+        { new: true }
+    );
+    return result;
+}
+
 export const UserService = {
     createUserIntoDB,
-    getAllUsers
+    getAllUsers,
+    getSingleUserForDB,
+    blockUserFormDB
 };
-
