@@ -9,5 +9,7 @@ router.post('/create-venue', auth('vendor'), upload.single('venue_image'), Venue
 router.get('/get-all-venues', auth('vendor', 'admin'), VenueController.getAllVenues);
 router.get('/get-all-venues-wallet', auth('vendor', 'admin'), VenueController.getAllVenuesWallet);
 router.get('/get-venue-transactions/:venueId', auth('vendor', 'admin'), VenueController.getVenueTransactions);
+router.patch('/mark-as-paid', auth('vendor', 'admin'), VenueController.markPaymentAsPaid);
+router.delete('/delete-single-transaction/:transactionId', auth('vendor', 'admin'), VenueController.deleteSingleTransaction);
 
 export const VenueRouter = router;

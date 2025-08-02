@@ -3,7 +3,7 @@ import QueryBuilder from "../../builder/QueryBuilder";
 import { RequestQuery } from "../../types/common";
 import { GiftModel } from "../Gift/gift.model";
 import { TVenue } from "./venue.interface";
-import { Venue, VenueWallet } from "./venue.model";
+import { Venue, VenueTransaction, VenueWallet } from "./venue.model";
 import AppError from "../../errors/AppError";
 import httpStatus from 'http-status';
 
@@ -81,6 +81,47 @@ const getAllVenuesWalletFromDB = async () => {
     return wallets;
 };
 
+// const getVenueTransactionsFromDB = async (venueId: string) => {
+//     if (!mongoose.Types.ObjectId.isValid(venueId)) {
+//         throw new AppError(httpStatus.BAD_REQUEST, 'Invalid venueId');
+//     }
+
+//     const venue = await Venue.findById(venueId).lean();
+//     if (!venue) throw new AppError(httpStatus.NOT_FOUND, 'Venue not found');
+
+//     // Map item_name -> item_id
+//     const menuMap = venue.menu.reduce((acc: Record<string, string>, item: any) => {
+//         acc[item.item_name] = item._id.toString();
+//         return acc;
+//     }, {});
+
+//     const itemIds = Object.values(menuMap);
+
+//     // Find gifts with matching gift_id (assuming gift_id stores menu item id)
+//     const gifts = await GiftModel.find({
+//         gift_id: { $in: itemIds }
+//     }).lean();
+
+//     // Format the output per your spec
+//     return gifts.map(gift => {
+//         // find item name by gift_id (reverse lookup)
+//         const item = gift.gift_id
+//             ? venue.menu.find((item: any) => item._id.toString() === String(gift.gift_id))
+//             : null;
+
+
+//         return {
+//             serialId: venue.serialId,
+//             venueName: venue.name,
+//             paymentFrom: gift.sender_name,
+//             broughtItem: item?.item_name,
+//             paymentAmount: gift.amount,
+//             date: gift.created_at,
+//             transactionId: gift.transaction_id,
+//         };
+//     });
+// };
+
 const getVenueTransactionsFromDB = async (venueId: string) => {
     if (!mongoose.Types.ObjectId.isValid(venueId)) {
         throw new AppError(httpStatus.BAD_REQUEST, 'Invalid venueId');
@@ -89,7 +130,6 @@ const getVenueTransactionsFromDB = async (venueId: string) => {
     const venue = await Venue.findById(venueId).lean();
     if (!venue) throw new AppError(httpStatus.NOT_FOUND, 'Venue not found');
 
-    // Map item_name -> item_id
     const menuMap = venue.menu.reduce((acc: Record<string, string>, item: any) => {
         acc[item.item_name] = item._id.toString();
         return acc;
@@ -97,34 +137,60 @@ const getVenueTransactionsFromDB = async (venueId: string) => {
 
     const itemIds = Object.values(menuMap);
 
-    // Find gifts with matching gift_id (assuming gift_id stores menu item id)
     const gifts = await GiftModel.find({
         gift_id: { $in: itemIds }
     }).lean();
 
-    // Format the output per your spec
-    return gifts.map(gift => {
-        // find item name by gift_id (reverse lookup)
+    const transactions = gifts.map(gift => {
         const item = gift.gift_id
             ? venue.menu.find((item: any) => item._id.toString() === String(gift.gift_id))
             : null;
-
 
         return {
             serialId: venue.serialId,
             venueName: venue.name,
             paymentFrom: gift.sender_name,
-            broughtItem: item?.item_name,
+            broughtItem: item?.item_name || null,
             paymentAmount: gift.amount,
             date: gift.created_at,
             transactionId: gift.transaction_id,
         };
     });
+
+    // ✅ Optional: Save all to the VenueTransaction collection
+    if (transactions.length > 0) {
+        await VenueTransaction.insertMany(transactions, { ordered: false }).catch(err => {
+            console.error("Some transactions may already exist or failed to insert:", err.message);
+        });
+    }
+
+    return transactions;
+};
+
+
+const markPaymentAsPaidIntoDB = async (walletId: string) => {
+    const result = await VenueWallet.findByIdAndUpdate(
+        walletId,
+        { $set: { walletStatus: 'paid' } },
+        { new: true }
+    );
+
+    return result;
+}
+
+const deleteSingleTransactionFromDB = async (transactionId: string) => {
+    // console.log(transactionId);
+    const deleteTransaction = await VenueTransaction.findOneAndDelete({ transactionId })
+    console.log(deleteTransaction);
+
+    return deleteTransaction;
 };
 
 export const VenueServices = {
     createVenueIntoDB,
     getAllVenuesFromDB,
     getAllVenuesWalletFromDB,
-    getVenueTransactionsFromDB
+    getVenueTransactionsFromDB,
+    markPaymentAsPaidIntoDB,
+    deleteSingleTransactionFromDB
 };

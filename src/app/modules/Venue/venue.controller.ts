@@ -71,11 +71,37 @@ const getVenueTransactions = catchAsync(async (req: Request, res: Response) => {
         message: "Venue transactions fetched successfully.",
         data: result
     })
-})
+});
+
+const markPaymentAsPaid = catchAsync(async (req: Request, res: Response) => {
+    const { walletId } = req.body;
+    const result = await VenueServices.markPaymentAsPaidIntoDB(walletId);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Mark as paid.",
+        data: result
+    })
+});
+
+const deleteSingleTransaction = catchAsync(async (req: Request, res: Response) => {
+    const transactionId = req.params.transactionId;
+    const result = await VenueServices.deleteSingleTransactionFromDB(transactionId);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Transaction delete succesfully.',
+        data: result
+    });
+});
 
 export const VenueController = {
     createVenue,
     getAllVenues,
     getAllVenuesWallet,
-    getVenueTransactions
+    getVenueTransactions,
+    markPaymentAsPaid,
+    deleteSingleTransaction
 };
