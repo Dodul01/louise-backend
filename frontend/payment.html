@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Gift Payment</title>
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+
+<body>
+    <h2>Gift Payment</h2>
+
+    <form id="payment-form">
+        <div id="card-element"></div>
+        <button id="submit">Pay</button>
+        <p id="message"></p>
+    </form>
+
+    <script>
+        const stripe = Stripe("pk_test_51PcPm62MP0L90YjvNNkd1UGVrq9nu0QWdLfYT4pIF7xAJcfykwMCNeTiZVhSswnCNFHdp2WbqZJweJcxk9IRxARE00OCcRlb8N");
+
+        const elements = stripe.elements();
+        const card = elements.create("card");
+        card.mount("#card-element");
+
+        document.getElementById("payment-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODg1MjQzMDdiZTQwZTZhNWI5MjRkYTMiLCJuYW1lIjoiTW96YW1tZWwgSG9xdWUgRG9kdWwiLCJlbWFpbCI6ImFsbGVuZG9kdWw2QGdtYWlsLmNvbSIsImlzVmVyaWZpZWQiOnRydWUsImlzRGVsZXRlZCI6ZmFsc2UsImlhdCI6MTc1MzcyMjQ2MiwiZXhwIjoxNzYxNDk4NDYyfQ.LyOkRSn4p9i7CUEpYeOeUPtUm0D1tWsLAWWbd2c4LGw'
+
+            const giftData = {
+                sender_name: "John",
+                recipient_name: "Jane",
+                recipient_email: "jane@example.com",
+                amount: 20,
+                message: "Happy Birthday!"
+            };
+
+            const res = await fetch("http://localhost:5001/api/v1/gift/create-gift-payment", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify(giftData),
+            });
+
+            const { client_secret, gift_id } = await res.json();
+
+            const { error, paymentIntent } = await stripe.confirmCardPayment(client_secret, {
+                payment_method: { card: card },
+            });
+
+            if (error) {
+                document.getElementById("message").textContent = error.message;
+            } else if (paymentIntent.status === "succeeded") {
+                document.getElementById("message").textContent = "Payment successful!";
+
+                await fetch(`http://localhost:5001/api/v1/gift/confirm-payment/${paymentIntent.id}`, {
+                    method: "PATCH",
+                    headers: {
+                        "Authorization": `${token}`
+                    }
+                });
+
+                alert("QR Code generated. Gift is ready!");
+            }
+        });
+    </script>
+</body>
+
+</html>

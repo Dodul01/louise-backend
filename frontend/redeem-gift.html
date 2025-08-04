@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Redeem Gift</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 500px;
+            margin: auto;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+
+        .loading {
+            color: gray;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Redeem Gift</h2>
+        <p id="status" class="loading">Checking gift status...</p>
+        <div id="gift-details" style="display: none;">
+            <p><strong>From:</strong> <span id="sender"></span></p>
+            <p><strong>Message:</strong> <span id="message"></span></p>
+            <button onclick="redeemGift()">Redeem Now</button>
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const giftId = params.get('id');
+        const apiBase = "http://localhost:5000/api"; // Change if needed
+
+        const statusEl = document.getElementById("status");
+        const detailsEl = document.getElementById("gift-details");
+        const senderEl = document.getElementById("sender");
+        const messageEl = document.getElementById("message");
+
+        async function fetchGift() {
+            try {
+                const res = await fetch(`${apiBase}/gift/${giftId}`);
+                if (!res.ok) throw new Error("Gift not found.");
+                const gift = await res.json();
+
+                if (gift.data.status === "redeemed") {
+                    statusEl.textContent = "❌ This gift has already been redeemed.";
+                    statusEl.className = "error";
+                    return;
+                }
+
+                senderEl.textContent = gift.data.sender_name;
+                messageEl.textContent = gift.data.personal_message || "No message provided.";
+                statusEl.style.display = "none";
+                detailsEl.style.display = "block";
+            } catch (err) {
+                statusEl.textContent = "❌ Unable to load gift: " + err.message;
+                statusEl.className = "error";
+            }
+        }
+
+        async function redeemGift() {
+            try {
+                const res = await fetch(`${apiBase}/gift/redeem-gift/${giftId}`, {
+                    method: "POST"
+                });
+                if (!res.ok) throw new Error("Failed to redeem.");
+                const data = await res.json();
+                statusEl.textContent = "✅ Gift successfully redeemed!";
+                statusEl.className = "success";
+                detailsEl.style.display = "none";
+                statusEl.style.display = "block";
+            } catch (err) {
+                statusEl.textContent = "❌ Redeem failed: " + err.message;
+                statusEl.className = "error";
+            }
+        }
+        fetchGift();
+    </script>
+</body>
+
+</html>
