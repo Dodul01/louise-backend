@@ -116,7 +116,7 @@ const getVenueTransactionsFromDB = async (venueId: string) => {
         };
     });
 
-    // ✅ Optional: Save all to the VenueTransaction collection
+
     if (transactions.length > 0) {
         await VenueTransaction.insertMany(transactions, { ordered: false }).catch(err => {
             console.error("Some transactions may already exist or failed to insert:", err.message);
@@ -155,10 +155,7 @@ export const VenueServices = {
     getAllVenuesFromDB,
     getAllVenuesWalletFromDB,
     getVenueTransactionsFromDB,
-<<<<<<< HEAD
-    getFeaturedVenuesFromDB
-=======
+    getFeaturedVenuesFromDB,
     markPaymentAsPaidIntoDB,
     deleteSingleTransactionFromDB
->>>>>>> a539ba6e11ddf0a481f29e6ce0af77ba18a30d7d
 };
