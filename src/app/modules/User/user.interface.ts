@@ -1,6 +1,7 @@
 export interface TUser {
     serialId: string;
     name: string;
+    profile_image?: string | null;
     email: string;
     password: string | undefined;
     isVerified?: boolean;

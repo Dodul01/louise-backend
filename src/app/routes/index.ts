@@ -6,6 +6,7 @@ import { GiftRouter } from "../modules/Gift/gift.route";
 import { ReviewRouter } from "../modules/Review/review.route";
 import { PrivacyRoute } from "../modules/PrivacyPolicy/privacyPolicy.route";
 import { TermsRoute } from "../modules/TermsAndConditions/TermsAndConditions.route";
+import { ProfileRouter } from "../modules/Profile/profile.route";
 
 const router = Router();
 
@@ -37,6 +38,10 @@ const moduleRoutes = [
     {
         path: '/terms',
         route: TermsRoute
+    },
+    {
+        path: '/profile',
+        route: ProfileRouter
     }
 ];
 
