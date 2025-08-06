@@ -25,6 +25,7 @@ const createPaymentIntent = async (giftId: string) => {
         amount: Math.round(gift.amount as number * 100),
         currency: 'gbp',
         payment_method_types: ['card'],
+        automatic_payment_methods: { enabled: true },
         metadata: {
             gift_id: gift._id.toString(),
             transaction_id: `txn_${gift._id}`

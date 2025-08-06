@@ -7,6 +7,7 @@ import { ReviewRouter } from "../modules/Review/review.route";
 import { PrivacyRoute } from "../modules/PrivacyPolicy/privacyPolicy.route";
 import { TermsRoute } from "../modules/TermsAndConditions/TermsAndConditions.route";
 import { ProfileRouter } from "../modules/Profile/profile.route";
+import { HelpAndSupportRouter } from "../modules/HelpAndSupport/HelpAndSupport.route";
 
 const router = Router();
 
@@ -42,6 +43,10 @@ const moduleRoutes = [
     {
         path: '/profile',
         route: ProfileRouter
+    },
+    {
+        path: '/help-and-support',
+        route: HelpAndSupportRouter
     }
 ];
 

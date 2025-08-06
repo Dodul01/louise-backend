@@ -15,7 +15,13 @@ const updateTermsAndConditionIntoDB = async (termsId: string, termsAndCondition:
     return TermsAndCondition;
 }
 
+const getTermsAndConditionFromDB = async (termsId: string) => {
+    const TermsAndCondition = await TermsAndConditionsModel.findOne({ _id: termsId });
+    return TermsAndCondition;
+}
+
 export const TermsService = {
     createTermsAndConditionIntoDB,
-    updateTermsAndConditionIntoDB
+    updateTermsAndConditionIntoDB,
+    getTermsAndConditionFromDB
 }

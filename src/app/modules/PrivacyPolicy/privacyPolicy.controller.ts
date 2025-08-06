@@ -28,9 +28,22 @@ const updatePrivacyPolicy = catchAsync(async (req: Request, res: Response) => {
         message: "Privacy policy updated successfully.",
         data: result,
     });
-})
+});
+
+const getPrivacyPolicy = catchAsync(async (req: Request, res: Response) => {
+    const privacyId = req.params.policyId;
+    const result = await PrivacyService.getPrivacyPolicyFromDB(privacyId);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Privacy policy fetched successfully.",
+        data: result
+    })
+});
 
 export const policyController = {
     createPrivacyPolicy,
-    updatePrivacyPolicy
+    updatePrivacyPolicy,
+    getPrivacyPolicy
 }

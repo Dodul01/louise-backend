@@ -29,7 +29,20 @@ const updateTermsAndCondition = catchAsync(async (req: Request, res: Response) =
     });
 });
 
+const getTermsAndCondition = catchAsync(async (req: Request, res: Response) => {
+    const termsId = req.params.termsId;
+    const result = await TermsService.getTermsAndConditionFromDB(termsId);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Terms and condition fetched successfully.",
+        data: result
+    })
+});
+
 export const termsController = {
     createTermsAndCondition,
-    updateTermsAndCondition
+    updateTermsAndCondition,
+    getTermsAndCondition
 };

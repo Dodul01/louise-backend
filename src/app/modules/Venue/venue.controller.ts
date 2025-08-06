@@ -10,7 +10,6 @@ const createVenue = catchAsync(async (req: Request, res: Response) => {
     const image = req.file;
     if (!image) throw new Error("Image upload failed");
 
-    // Parse complex fields if they come as strings from multipart/form-data
     const parsedBody = {
         ...req.body,
         menu: JSON.parse(req.body.menu),

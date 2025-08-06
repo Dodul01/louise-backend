@@ -15,7 +15,13 @@ const updatePrivacyPolicyFormDB = async (policyId: string, privacyPolicy: string
     return result;
 }
 
+const getPrivacyPolicyFromDB = async (privacyId: string) => {
+    const result = await PrivacyPolicyModel.findOne({ _id: privacyId });
+    return result;
+}
+
 export const PrivacyService = {
     createPrivacyPolicyIntoDB,
-    updatePrivacyPolicyFormDB
+    updatePrivacyPolicyFormDB,
+    getPrivacyPolicyFromDB
 }
