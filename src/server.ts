@@ -1,9 +1,13 @@
-import { Server } from "http";
+import { Server as HttpServer } from 'http';
+import { Server } from 'socket.io';
+
 import app from "./app";
 import config from "./app/config";
 import mongoose from "mongoose";
+import socketIo from "./app/helper/socketHelper";
 
-let server: Server;
+let server: HttpServer;
+export let io: Server;
 
 async function main() {
     try {
@@ -11,6 +15,8 @@ async function main() {
 
         server = app.listen(config.port, () => {
             console.log(`Server is running on port ${config.port}`);
+
+            io = socketIo(server)
         })
     } catch (error) {
         console.error(`Error starting server: ${error}`);

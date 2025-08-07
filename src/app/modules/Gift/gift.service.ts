@@ -24,7 +24,7 @@ const createPaymentIntent = async (giftId: string) => {
     const intent = await stripe.paymentIntents.create({
         amount: Math.round(gift.amount as number * 100),
         currency: 'gbp',
-        payment_method_types: ['card'],
+        // payment_method_types: ['card'],
         automatic_payment_methods: { enabled: true },
         metadata: {
             gift_id: gift._id.toString(),
@@ -35,21 +35,6 @@ const createPaymentIntent = async (giftId: string) => {
     return { clientSecret: intent.client_secret };
 };
 
-// export const savePayment = async (giftId: string, transactionId: string, status: string) => {
-//     const gift = await GiftModel.findById(giftId);
-//     if (!gift) throw new AppError(404, 'Gift not found');
-
-//     gift.status = status;
-//     gift.transaction_id = transactionId;
-
-//     if (status === 'paid') {
-//         const qrCode = await QRCode.toDataURL(`QR - {gift._id}`);
-//         gift.qr_code = qrCode
-//     }
-
-//     await gift.save();
-//     return gift;
-// };
 const savePayment = async (giftId: string, transactionId: string, status: "pending" | "paid" | "redeemed") => {
     const gift = await GiftModel.findById(giftId);
     if (!gift) throw new AppError(404, 'Gift not found');
@@ -65,7 +50,6 @@ const savePayment = async (giftId: string, transactionId: string, status: "pendi
     await gift.save();
     return gift;
 };
-
 
 const handleStripeWebhook = async (event: Stripe.Event) => {
     if (event.type === 'payment_intent.succeeded') {
