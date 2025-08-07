@@ -1,3 +1,6 @@
+import { io } from "../../../server";
+import { sendAdminNotification } from "../../helper/socketHelper";
+import { NotificationService } from "../Notification/notification.service";
 import { TUser } from "./user.interface";
 import { User } from "./user.model";
 import { generateUserSerialId } from "./user.utils";
@@ -24,6 +27,19 @@ const blockUserFormDB = async (userId: string) => {
         { $set: { isBlocked: true } },
         { new: true }
     );
+
+    // create notification and send it to admin
+    NotificationService.createNotificationIntoDB({
+        title: 'User Blocked',
+        message: `You blocked ${result?.name} successfully.`,
+        reciver: 'admin',
+    });
+
+    sendAdminNotification(io, {
+        title: "User Blocked",
+        message: `You blocked ${result?.name} successfully.`,
+    })
+    
     return result;
 }
 

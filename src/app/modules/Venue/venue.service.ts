@@ -6,12 +6,27 @@ import { TVenue } from "./venue.interface";
 import { Venue, VenueTransaction, VenueWallet } from "./venue.model";
 import AppError from "../../errors/AppError";
 import httpStatus from 'http-status';
+import { NotificationService } from "../Notification/notification.service";
+import { sendAdminNotification } from "../../helper/socketHelper";
+import { io } from "../../../server";
 
 const createVenueIntoDB = async (payload: TVenue) => {
     const isExists = await Venue.findOne({ serialId: payload.serialId });
     if (isExists) throw new Error("Venue with this serialId already exists");
 
     const newVenue = await Venue.create(payload);
+
+    // create notification and send it to admin
+    NotificationService.createNotificationIntoDB({
+        message: `New venue ${payload.name} has been successfully created.`,
+        reciver: 'admin',
+    });
+
+    sendAdminNotification(io, {
+        title: "New Venue Created",
+        message: `New Venue ${payload.name} has been successfully created.`,
+    })
+
     return newVenue;
 };
 

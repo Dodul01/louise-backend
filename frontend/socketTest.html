@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Socket.IO Notification Test</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+
+<body>
+    <h1>Socket.IO Admin Notification Test</h1>
+    <div id="messages"></div>
+
+    <script>
+        const socket = io('http://localhost:5001', {
+            auth: {
+                userId: 'admin',
+                role: 'admin'
+            }
+        });
+
+        socket.on('connect', () => {
+            console.log('✅ Connected to socket');
+            const msgBox = document.getElementById('messages');
+            msgBox.innerHTML += '<p>Connected to socket server.</p>';
+        });
+
+        socket.on('notification', (data) => {
+            console.log('📩 Notification received:', data);
+            const msgBox = document.getElementById('messages');
+            msgBox.innerHTML += `<p><strong>${data.title}</strong>: ${data.message} (${data.date} ${data.time})</p>`;
+        });
+
+        socket.on('disconnect', () => {
+            console.log('❌ Disconnected from socket');
+        });
+    </script>
+</body>
+
+</html>

@@ -16,8 +16,8 @@ async function main() {
         server = app.listen(config.port, () => {
             console.log(`Server is running on port ${config.port}`);
 
-            io = socketIo(server)
-        })
+            io = socketIo(server);
+        });
     } catch (error) {
         console.error(`Error starting server: ${error}`);
     }
