@@ -51,6 +51,18 @@ const blockUser = catchAsync(async (req: Request, res: Response) => {
     })
 })
 
+const unblockUser = catchAsync(async (req: Request, res: Response) => {
+    const userId = req.body.userId;
+    const result = await UserService.unblockUserFormDB(userId);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "User unblock succesfully.",
+        data: result,
+    })
+})
+
 const getSingleUser = catchAsync(async (req: Request, res: Response) => {
     const userId = req.params.userId;
     const result = await UserService.getSingleUserForDB(userId);
@@ -68,5 +80,6 @@ export const UserControllers = {
     createUser,
     getAllUsers,
     blockUser,
+    unblockUser,
     getSingleUser
 }

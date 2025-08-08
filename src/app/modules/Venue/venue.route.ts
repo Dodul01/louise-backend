@@ -11,6 +11,9 @@ router.get('/get-all-venues-wallet', auth('vendor', 'admin'), VenueController.ge
 router.get('/get-venue-transactions/:venueId', auth('vendor', 'admin'), VenueController.getVenueTransactions);
 router.get('/get-featured-venues', auth('vendor'), VenueController.getFeaturedVenues);
 router.patch('/mark-as-paid', auth('vendor', 'admin'), VenueController.markPaymentAsPaid);
+router.patch('/block-venue', auth('vendor', 'admin'), VenueController.blockVenue);
+router.patch('/unblock-venue', auth('vendor', 'admin'), VenueController.unblockVenue);
 router.delete('/delete-single-transaction/:transactionId', auth('vendor', 'admin'), VenueController.deleteSingleTransaction);
+
 
 export const VenueRouter = router;

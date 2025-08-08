@@ -110,6 +110,30 @@ const markPaymentAsPaid = catchAsync(async (req: Request, res: Response) => {
     })
 });
 
+const blockVenue = catchAsync(async (req: Request, res: Response) => {
+    const venueId = req.body.venueId;
+    const result = await VenueServices.blockVenueFromDB(venueId);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Venue block successfully.",
+        data: result
+    });
+})
+
+const unblockVenue = catchAsync(async (req: Request, res: Response) => {
+    const venueId = req.body.venueId;
+    const result = await VenueServices.unblockVenueFormDB(venueId);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Venue unblock successfully.",
+        data: result
+    })
+})
+
 export const VenueController = {
     createVenue,
     getAllVenues,
@@ -117,5 +141,7 @@ export const VenueController = {
     getVenueTransactions,
     getFeaturedVenues,
     markPaymentAsPaid,
-    deleteSingleTransaction
+    deleteSingleTransaction,
+    blockVenue,
+    unblockVenue
 };

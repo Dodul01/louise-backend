@@ -8,6 +8,7 @@ import { PrivacyRoute } from "../modules/PrivacyPolicy/privacyPolicy.route";
 import { TermsRoute } from "../modules/TermsAndConditions/TermsAndConditions.route";
 import { ProfileRouter } from "../modules/Profile/profile.route";
 import { HelpAndSupportRouter } from "../modules/HelpAndSupport/HelpAndSupport.route";
+import { OverviewRouter } from "../modules/Overview/oveview.route";
 
 const router = Router();
 
@@ -47,7 +48,11 @@ const moduleRoutes = [
     {
         path: '/help-and-support',
         route: HelpAndSupportRouter
-    }
+    },
+    {
+        path: '/overview',
+        route: OverviewRouter
+    },
 ];
 
 moduleRoutes.forEach((route) => router.use(route.path, route.route));

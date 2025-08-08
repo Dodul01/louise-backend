@@ -16,16 +16,18 @@ const createVenueIntoDB = async (payload: TVenue) => {
 
     const newVenue = await Venue.create(payload);
 
-    // create notification and send it to admin
-    NotificationService.createNotificationIntoDB({
-        message: `New venue ${payload.name} has been successfully created.`,
-        reciver: 'admin',
-    });
+    if (newVenue) {
+        NotificationService.createNotificationIntoDB({
+            message: `New venue ${payload.name} has been successfully created.`,
+            reciver: 'admin',
+        });
 
-    sendAdminNotification(io, {
-        title: "New Venue Created",
-        message: `New Venue ${payload.name} has been successfully created.`,
-    })
+        sendAdminNotification(io, {
+            title: "New Venue Created",
+            message: `New Venue ${payload.name} has been successfully created.`,
+        })
+    }
+
 
     return newVenue;
 };
@@ -149,6 +151,22 @@ const markPaymentAsPaidIntoDB = async (walletId: string) => {
         { new: true }
     );
 
+    if (result) {
+        const venue = await Venue.findById(result.venueId);
+
+        NotificationService.createNotificationIntoDB({
+            title: "Payment Relesed",
+            message: `Payment for ${venue?.name} has been released successfully.`,
+            reciver: 'admin',
+        });
+
+        sendAdminNotification(io, {
+            title: "Payment Relesed",
+            message: `Payment for ${venue?.name} has been released successfully.`
+        });
+    }
+
+
     return result;
 }
 
@@ -165,6 +183,52 @@ const getFeaturedVenuesFromDB = async () => {
     return venues;
 }
 
+const blockVenueFromDB = async (venueId: string) => {
+    const result = await Venue.findByIdAndUpdate(
+        venueId,
+        { $set: { isBlocked: true } },
+        { new: true }
+    );
+
+    if (result) {
+        sendAdminNotification(io, {
+            title: 'Venue Blocked',
+            message: `You have block ${result.name} venue successfully.`
+        });
+
+        NotificationService.createNotificationIntoDB({
+            title: "Venue Blocked",
+            message: `You have block ${result.name} venue successfully.`,
+            reciver: 'admin',
+        });
+    }
+
+    return result;
+}
+
+const unblockVenueFormDB = async (venueId: string) => {
+    const result = await Venue.findByIdAndUpdate(
+        venueId,
+        { $set: { isBlocked: false } },
+        { new: true }
+    );
+
+    if (result) {
+        sendAdminNotification(io, {
+            title: 'Venue Unblocked',
+            message: `You have unblock ${result.name} venue successfully.`
+        });
+
+        NotificationService.createNotificationIntoDB({
+            title: "Venue Unblocked",
+            message: `You have unblock ${result.name} venue successfully.`,
+            reciver: 'admin',
+        });
+    }
+
+    return result
+}
+
 export const VenueServices = {
     createVenueIntoDB,
     getAllVenuesFromDB,
@@ -172,5 +236,7 @@ export const VenueServices = {
     getVenueTransactionsFromDB,
     getFeaturedVenuesFromDB,
     markPaymentAsPaidIntoDB,
-    deleteSingleTransactionFromDB
+    deleteSingleTransactionFromDB,
+    blockVenueFromDB,
+    unblockVenueFormDB
 };
