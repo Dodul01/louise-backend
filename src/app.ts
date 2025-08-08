@@ -5,25 +5,19 @@ import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import notFound from './app/middlewares/notFound';
 import router from './app/routes';
 import path from 'path';
-import Stripe from 'stripe';
-import { GiftModel } from './app/modules/Gift/gift.model';
-import QRCode from "qrcode";
 // import router from './app/routes';
 
-//   fond-endear-zippy-wisely
-//    Done! The Stripe CLI is configured for your account with account id acct_1PcPm62MP0L90Yjv
+// fond-endear-zippy-wisely
+// Done! The Stripe CLI is configured for your account with account id acct_1PcPm62MP0L90Yjv
 
-//    Please note: this key will expire after 90 days, at which point you'll need to re-authenticate.
-//   how to run stripe in cli >"C:\Users\allen\Downloads\stripe_1.28.0_windows_x86_64\stripe.exe" login
+// Please note: this key will expire after 90 days, at which point you'll need to re-authenticate.
+// how to run stripe in cli >"C:\Users\allen\Downloads\stripe_1.28.0_windows_x86_64\stripe.exe" login
 
-//  whsec_d0c446948ffb18c08edd304e3608a34acad013b585fe382be606e992b2b826cb
-
-
+// whsec_d0c446948ffb18c08edd304e3608a34acad013b585fe382be606e992b2b826cb
 
 const app: Application = express();
-// ✅ Webhook route must come BEFORE express.json()
-app.use('/api/v1/gift/webhook', express.raw({ type: 'application/json' }));
 
+app.use('/api/v1/gift/webhook', express.raw({ type: 'application/json' }));
 
 // parsers
 app.use(express.json());
@@ -38,9 +32,8 @@ app.use(cors({
 app.use('/api/v1', router);
 
 app.get('/', (req: Request, res: Response) => {
-    res.send({ message: "Server is running" })
-})
-
+    res.send({ message: "Server is running" });
+});
 
 // Serve static files from the "uploads" directory
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));

@@ -4,6 +4,6 @@ import { OverviewController } from "./overview.controller";
 
 const router = express.Router();
 
-router.get('/get-overview', auth('admin', 'vendor'), OverviewController.getOverview);
+router.get('/get-overview', auth('admin'), OverviewController.getOverview);
 
 export const OverviewRouter = router;

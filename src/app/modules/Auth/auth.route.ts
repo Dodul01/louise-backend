@@ -9,6 +9,6 @@ router.post('/sign-in', AuthControllers.loginUser);
 router.post('/send-otp', VerifyEmailControllers.sendOTP);
 router.post('/verify-email', VerifyEmailControllers.verifyOTPController);
 router.post('/forget-password', AuthControllers.forgetPassword);
-router.post('/reset-password', auth("vendor", "admin"), AuthControllers.resetPassword);
+router.post('/reset-password', auth("user","vendor", "admin"), AuthControllers.resetPassword);
 
 export const AuthRouter = router;

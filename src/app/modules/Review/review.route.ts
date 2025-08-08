@@ -4,6 +4,6 @@ import auth from '../../middlewares/auth';
 
 const router = express.Router();
 
-router.post('/create-review', auth('vendor'), ReviewController.createReview);
+router.post('/create-review', auth('user'), ReviewController.createReview);
 
 export const ReviewRouter = router;
