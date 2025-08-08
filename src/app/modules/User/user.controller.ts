@@ -14,7 +14,7 @@ const createUser = catchAsync(async (req: Request, res: Response) => {
         giftReceived: 0,
         isBlocked: false,
         isDeleted: false,
-        role: "vendor" as "vendor",
+        role: "user" as "user",
         serialId: "",
     };
 

@@ -10,7 +10,7 @@ import { TUser } from '../modules/User/user.interface';
 const auth = (...requiredRoles: string[]) => {
     return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
         const token = req.headers.authorization;
-        
+
         // checking if the token is missing
         if (!token) {
             throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized!');
@@ -52,7 +52,7 @@ const auth = (...requiredRoles: string[]) => {
 
         const userRole = user?.role;
 
-        if (!userRole || !["vendor", "admin"].includes(userRole)) {
+        if (!userRole || !["user", "vendor", "admin"].includes(userRole)) {
             throw new AppError(httpStatus.UNAUTHORIZED, "Invalid role");
         }
 

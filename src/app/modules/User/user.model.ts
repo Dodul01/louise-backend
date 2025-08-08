@@ -6,8 +6,8 @@ import config from "../../config";
 export enum UserRole {
     ADMIN = 'admin',
     VENDOR = 'vendor',
+    USER = 'user'
 }
-
 
 const userSchema = new Schema<TUser>({
     serialId: {

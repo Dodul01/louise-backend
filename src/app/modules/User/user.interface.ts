@@ -10,5 +10,5 @@ export interface TUser {
     giftReceived: number;
     isBlocked: boolean;
     isDeleted: boolean;
-    role: "vendor" | "admin"
+    role: "user" | "vendor" | "admin"
 }
