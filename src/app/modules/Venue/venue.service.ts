@@ -9,12 +9,14 @@ import httpStatus from 'http-status';
 import { NotificationService } from "../Notification/notification.service";
 import { sendAdminNotification } from "../../helper/socketHelper";
 import { io } from "../../../server";
+import { generateVenueSerialId } from "./venue.utils";
 
 const createVenueIntoDB = async (payload: TVenue) => {
-    const isExists = await Venue.findOne({ serialId: payload.serialId });
-    if (isExists) throw new Error("Venue with this serialId already exists");
+    const serialId = await generateVenueSerialId();
+    // const isExists = await Venue.findOne({ serialId: payload.serialId });
+    // if (isExists) throw new Error("Venue with this serialId already exists");
 
-    const newVenue = await Venue.create(payload);
+    const newVenue = await Venue.create({ ...payload, serialId });
 
     if (newVenue) {
         NotificationService.createNotificationIntoDB({
@@ -45,12 +47,47 @@ const getAllVenuesFromDB = async (query: RequestQuery) => {
 
 const getAllVenuesWalletFromDB = async () => {
     /* 
-        STEP 1: get all venues 
-        STEP 2: get all gifts
-        STEP 3: calculate total amount by finding which gift belongs to which venue
+        STEP 1: get all venues.
+        STEP 2: get all gifts.
+        STEP 3: calculate total amount by finding which gift belongs to which venue.
         STEP 4: calculate total commission (20%) earning.
         STEP 5: save the full data in db.
     */
+    // const aggregated = await GiftModel.aggregate([
+    //     {
+    //         $lookup: {
+    //             from: "venues",
+    //             let: { giftMenuId: "$gift_id" },
+    //             pipeline: [
+    //                 { $match: { isDeleted: false } },
+    //                 { $unwind: "$menu" },
+    //                 { $match: { $expr: { $eq: ["$menu._id", "$$giftMenuId"] } } },
+    //             ],
+    //             as: "matchedVenue",
+    //         },
+    //     },
+    //     { $unwind: "$matchedVenue" },
+    //     {
+    //         $group: {
+    //             _id: "$matchedVenue._id",
+    //             totalAmount: { $sum: "$amount" },
+    //             totalGifts: { $sum: 1 },
+    //         },
+    //     },
+    //     {
+    //         $project: {
+    //             serialId: 1,
+    //             venueId: "$_id",
+    //             _id: 0,
+    //             totalGifts: 1,
+    //             totalAmount: 1,
+    //             commission: { $multiply: ["$totalAmount", 0.2] },
+    //             netEarning: { $subtract: ["$totalAmount", { $multiply: ["$totalAmount", 0.2] }] },
+    //             walletStatus: { $literal: "pending" },
+    //         },
+    //     },
+    // ]);
+
     const aggregated = await GiftModel.aggregate([
         {
             $lookup: {
@@ -68,12 +105,14 @@ const getAllVenuesWalletFromDB = async () => {
         {
             $group: {
                 _id: "$matchedVenue._id",
+                serialId: { $first: "$matchedVenue.serialId" },
                 totalAmount: { $sum: "$amount" },
                 totalGifts: { $sum: 1 },
             },
         },
         {
             $project: {
+                serialId: "$serialId",
                 venueId: "$_id",
                 _id: 0,
                 totalGifts: 1,
@@ -81,9 +120,11 @@ const getAllVenuesWalletFromDB = async () => {
                 commission: { $multiply: ["$totalAmount", 0.2] },
                 netEarning: { $subtract: ["$totalAmount", { $multiply: ["$totalAmount", 0.2] }] },
                 walletStatus: { $literal: "pending" },
-            },
-        },
+            }
+        }
     ]);
+
+
 
     // overwrite existing wallet for each venue (upsert logic)
     for (const entry of aggregated) {

@@ -42,7 +42,7 @@ export interface IVenue extends Document {
 
 /* ========== Venue Transaction Schema ========== */
 const VenueTransactionSchema = new Schema({
-    serialId: { type: String, required: true },
+    serialId: { type: String, required: true, unique: true },
     venueName: { type: String, required: true },
     paymentFrom: { type: String, required: true },
     broughtItem: { type: String, required: false },
@@ -94,6 +94,7 @@ const VenueSchema = new Schema<IVenue>({
 
 /* ========== VenueWallet Schema ========== */
 export interface IVenueWallet extends Document {
+    serialId: string;
     venueId: mongoose.Types.ObjectId;
     totalGifts: number;
     totalAmount: number;
@@ -103,6 +104,7 @@ export interface IVenueWallet extends Document {
 }
 
 const VenueWalletSchema = new Schema<IVenueWallet>({
+    serialId: { type: String, required: true },
     venueId: { type: mongoose.Schema.Types.ObjectId, ref: "Venue", required: true },
     totalGifts: { type: Number, required: true },
     totalAmount: { type: Number, required: true },

@@ -18,6 +18,7 @@ const createVenue = catchAsync(async (req: Request, res: Response) => {
         isBlocked: req.body.isBlocked === "true",
         ratings: parseFloat(req.body.ratings),
         venue_image: getLocalImageURL(image.filename),
+        serialId: "",
     };
 
     const validated = venueValidation.venueValidationSchema.parse(parsedBody);
