@@ -18,7 +18,6 @@ const getOverviewFromDB = async (): Promise<{
     return { totalUsers, totalVenues, totalEarnings };
 };
 
-
 export const OverviewService = {
     getOverviewFromDB
 };

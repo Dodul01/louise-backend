@@ -24,7 +24,7 @@ const createPaymentIntent = async (giftId: string) => {
     const intent = await stripe.paymentIntents.create({
         amount: Math.round(gift.amount as number * 100),
         currency: 'gbp',
-        // payment_method_types: ['card'],
+        payment_method_types: ['card', 'apple_pay', 'google_pay'],
         automatic_payment_methods: { enabled: true },
         metadata: {
             gift_id: gift._id.toString(),
@@ -47,7 +47,7 @@ const savePayment = async (giftId: string, transactionId: string, status: "pendi
         gift.qr_code = qrCode
     }
 
-    await gift.save();
+    await gift.save(); 
     return gift;
 };
 
