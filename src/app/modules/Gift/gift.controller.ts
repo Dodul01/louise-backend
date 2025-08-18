@@ -126,4 +126,17 @@ export const GiftController = {
             data: result,
         });
     }),
+
+    // 9. QR Scanner
+    qrScanner: catchAsync(async (req: Request, res: Response) => {
+        const payload = req.body;
+        const result = await GiftService.scanQRFromDB(payload);
+
+        sendResponse(res, {
+            statusCode: httpStatus.OK,
+            success: true,
+            message: 'QR code scaned successfully.',
+            data: result,
+        });
+    })
 }

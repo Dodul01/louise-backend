@@ -12,5 +12,6 @@ router.post('/redeem-gift/:gift_id', auth('user'), GiftController.redeemGift);
 router.get('/my-gift/:user_id', auth('user'), GiftController.getMyReceivedGifts);
 router.get('/my-sent-gift/:user_id', auth('user'), GiftController.getMySendedGifts);
 router.get('/my-single-gift/:giftId', auth('user'), GiftController.getSingleGifts);
+router.post('/scan-qr', auth('vendor'), GiftController.qrScanner);
 
 export const GiftRouter = router;

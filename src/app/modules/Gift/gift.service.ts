@@ -47,7 +47,7 @@ const savePayment = async (giftId: string, transactionId: string, status: "pendi
         gift.qr_code = qrCode
     }
 
-    await gift.save(); 
+    await gift.save();
     return gift;
 };
 
@@ -91,6 +91,19 @@ const redeemGift = async (giftId: string) => {
     return gift;
 };
 
+const scanQRFromDB = async (payload: any) => {
+    const gift = await GiftModel.findById(payload.giftId)
+ 
+    if (!gift) throw new Error("Gift not found");
+    if (gift.status === "redeemed") throw new Error("Gift already redeemed");
+
+    gift.status = "redeemed";
+    gift.redeemed_at = new Date();
+    await gift.save();
+
+    return gift;
+}
+
 const getMySendedGiftsFromDB = async (senderId: string) => {
     const sendedGifts = await GiftModel.find({ sender_id: senderId }).sort({ createdAt: -1 });
 
@@ -122,5 +135,6 @@ export const GiftService = {
     redeemGift,
     getMySendedGiftsFromDB,
     getMyReceivedGiftsFromDB,
-    getSingleGiftFromDB
+    getSingleGiftFromDB,
+    scanQRFromDB
 }
