@@ -3,6 +3,7 @@ export interface TUser {
     name: string;
     profile_image?: string | null;
     email: string;
+    phone: string;
     password: string | undefined;
     isVerified?: boolean;
     isAgreeWithTermsAndConditions?: boolean;

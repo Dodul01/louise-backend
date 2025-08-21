@@ -28,6 +28,12 @@ const userSchema = new Schema<TUser>({
         required: true,
         unique: true
     },
+    phone: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true
+    },
     password: {
         type: String,
         required: true,
