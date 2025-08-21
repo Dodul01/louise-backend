@@ -16,7 +16,7 @@ const createVenue = catchAsync(async (req: Request, res: Response) => {
         opening_hours: JSON.parse(req.body.opening_hours),
         item_price: parseFloat(req.body.item_price),
         isBlocked: req.body.isBlocked === "true",
-        ratings: parseFloat(req.body.ratings),
+        ratings: 0,
         venue_image: getLocalImageURL(image.filename),
         serialId: "",
     };

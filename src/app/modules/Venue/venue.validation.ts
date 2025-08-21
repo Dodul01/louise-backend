@@ -70,9 +70,10 @@ const venueValidationSchema = z.object({
         invalid_type_error: "Location must be string.",
     }),
     menu: z.array(menuItemSchema),
-    isBlocked: z.boolean(),
+    isBlocked: z.boolean().optional(),
     ratings: z.number().min(0).max(5),
-    popular_Item: z.string(),
+    popular_Item: z.string().optional(),
+    isFeatured: z.boolean().optional(),
     venue_image: z.string(),
     opening_hours: openingHoursSchema,
 });

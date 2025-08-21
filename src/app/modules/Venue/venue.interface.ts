@@ -18,11 +18,11 @@ export interface TVenue {
     venue_type: "cafe" | "bakery" | "restaurant";
     location: string;
     menu: TMenu[];
-    isBlocked: boolean;
-    ratings: number;
-    popular_Item: string;
+    isBlocked?: boolean;
+    ratings?: number;
+    popular_Item?: string;
     venue_image: string;
     opening_hours: TOpeningHours;
-    isDeleted: boolean;
-    isFeatured: boolean;
+    isDeleted?: boolean;
+    isFeatured?: boolean;
 }
