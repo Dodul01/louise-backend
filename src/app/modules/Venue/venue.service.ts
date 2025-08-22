@@ -184,7 +184,6 @@ const getVenueTransactionsFromDB = async (venueId: string) => {
     return transactions;
 };
 
-
 const markPaymentAsPaidIntoDB = async (walletId: string) => {
     const result = await VenueWallet.findByIdAndUpdate(
         walletId,

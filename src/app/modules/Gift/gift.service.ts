@@ -126,7 +126,6 @@ const getSingleGiftFromDB = async (giftId: string) => {
     return gift;
 }
 
-
 export const GiftService = {
     createGiftPayment,
     createPaymentIntent,
