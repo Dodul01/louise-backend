@@ -5,6 +5,7 @@ import app from "./app";
 import config from "./app/config";
 import mongoose from "mongoose";
 import socketIo from "./app/helper/socketHelper";
+import { seedGiftCategories } from './app/modules/GiftCategory/giftCategory.model';
 
 let server: HttpServer;
 export let io: Server;
@@ -14,6 +15,8 @@ async function main() {
         await mongoose.connect(config.database_url as string);
 
         server = app.listen(config.port, () => {
+            // seed category in db 
+            seedGiftCategories()
             console.log(`Server is running on port ${config.port}`);
 
             io = socketIo(server);

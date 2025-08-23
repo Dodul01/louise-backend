@@ -9,6 +9,7 @@ import { TermsRoute } from "../modules/TermsAndConditions/TermsAndConditions.rou
 import { ProfileRouter } from "../modules/Profile/profile.route";
 import { HelpAndSupportRouter } from "../modules/HelpAndSupport/HelpAndSupport.route";
 import { OverviewRouter } from "../modules/Overview/oveview.route";
+import { GiftCategoryRouter } from "../modules/GiftCategory/giftCategory.route";
 
 const router = Router();
 
@@ -52,6 +53,10 @@ const moduleRoutes = [
     {
         path: '/overview',
         route: OverviewRouter
+    },
+     {
+        path: '/gift-category',
+        route: GiftCategoryRouter
     },
 ];
 

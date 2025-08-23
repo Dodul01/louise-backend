@@ -53,41 +53,7 @@ const getAllVenuesWalletFromDB = async () => {
         STEP 4: calculate total commission (20%) earning.
         STEP 5: save the full data in db.
     */
-    // const aggregated = await GiftModel.aggregate([
-    //     {
-    //         $lookup: {
-    //             from: "venues",
-    //             let: { giftMenuId: "$gift_id" },
-    //             pipeline: [
-    //                 { $match: { isDeleted: false } },
-    //                 { $unwind: "$menu" },
-    //                 { $match: { $expr: { $eq: ["$menu._id", "$$giftMenuId"] } } },
-    //             ],
-    //             as: "matchedVenue",
-    //         },
-    //     },
-    //     { $unwind: "$matchedVenue" },
-    //     {
-    //         $group: {
-    //             _id: "$matchedVenue._id",
-    //             totalAmount: { $sum: "$amount" },
-    //             totalGifts: { $sum: 1 },
-    //         },
-    //     },
-    //     {
-    //         $project: {
-    //             serialId: 1,
-    //             venueId: "$_id",
-    //             _id: 0,
-    //             totalGifts: 1,
-    //             totalAmount: 1,
-    //             commission: { $multiply: ["$totalAmount", 0.2] },
-    //             netEarning: { $subtract: ["$totalAmount", { $multiply: ["$totalAmount", 0.2] }] },
-    //             walletStatus: { $literal: "pending" },
-    //         },
-    //     },
-    // ]);
-
+   
     const aggregated = await GiftModel.aggregate([
         {
             $lookup: {
