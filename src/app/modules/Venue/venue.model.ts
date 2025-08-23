@@ -26,6 +26,8 @@ interface IOpeningHours {
 export interface IVenue extends Document {
     serialId: string;
     name: string;
+    email: string;
+    password: string;
     venue_type: "cafe" | "bakery" | "restaurant";
     location: string;
     menu: IMenu[];
@@ -80,6 +82,8 @@ const OpeningHoursSchema = new Schema<IOpeningHours>({
 const VenueSchema = new Schema<IVenue>({
     serialId: { type: String, required: true, unique: true },
     name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
     venue_type: { type: String, enum: ["cafe", "bakery", "restaurant"], required: true },
     location: { type: String, required: true },
     menu: { type: [MenuSchema], required: true },

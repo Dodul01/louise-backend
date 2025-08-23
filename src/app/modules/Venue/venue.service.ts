@@ -13,8 +13,6 @@ import { generateVenueSerialId } from "./venue.utils";
 
 const createVenueIntoDB = async (payload: TVenue) => {
     const serialId = await generateVenueSerialId();
-    // const isExists = await Venue.findOne({ serialId: payload.serialId });
-    // if (isExists) throw new Error("Venue with this serialId already exists");
 
     const newVenue = await Venue.create({ ...payload, serialId });
 
@@ -27,10 +25,8 @@ const createVenueIntoDB = async (payload: TVenue) => {
         sendAdminNotification(io, {
             title: "New Venue Created",
             message: `New Venue ${payload.name} has been successfully created.`,
-        })
+        });
     }
-
-
     return newVenue;
 };
 

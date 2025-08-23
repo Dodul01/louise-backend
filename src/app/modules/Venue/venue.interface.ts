@@ -15,6 +15,8 @@ export type TOpeningHours = {
 export interface TVenue {
     serialId: string;
     name: string;
+    email: string;
+    password: string;
     venue_type: "cafe" | "bakery" | "restaurant";
     location: string;
     menu: TMenu[];
