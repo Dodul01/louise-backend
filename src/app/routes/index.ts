@@ -10,6 +10,7 @@ import { ProfileRouter } from "../modules/Profile/profile.route";
 import { HelpAndSupportRouter } from "../modules/HelpAndSupport/HelpAndSupport.route";
 import { OverviewRouter } from "../modules/Overview/oveview.route";
 import { GiftCategoryRouter } from "../modules/GiftCategory/giftCategory.route";
+import { ChangePasswordRouter } from "../modules/changePassword/changePassword.route";
 
 const router = Router();
 
@@ -54,9 +55,13 @@ const moduleRoutes = [
         path: '/overview',
         route: OverviewRouter
     },
-     {
+    {
         path: '/gift-category',
         route: GiftCategoryRouter
+    },
+    {
+        path: '/admin-help',
+        route: ChangePasswordRouter
     },
 ];
 

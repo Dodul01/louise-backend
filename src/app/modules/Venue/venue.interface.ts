@@ -16,7 +16,7 @@ export interface TVenue {
     serialId: string;
     name: string;
     email: string;
-    password: string;
+    password: string; 
     venue_type: "cafe" | "bakery" | "restaurant";
     location: string;
     menu: TMenu[];
@@ -27,4 +27,4 @@ export interface TVenue {
     opening_hours: TOpeningHours;
     isDeleted?: boolean;
     isFeatured?: boolean;
-}
+};

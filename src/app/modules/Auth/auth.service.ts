@@ -92,7 +92,7 @@ const resetPassword = async (jwtToken: string, newPassword: string) => {
     // Step 1: Validate token format
     if (!token || token.split('.').length !== 3) {
         throw new AppError(httpStatus.UNAUTHORIZED, 'Malformed or missing JWT token');
-    }
+    } 
 
     // Step 2: Verify token
     let decoded;
