@@ -71,7 +71,7 @@ const socketIo = (server: HttpServer) => {
             socket.on('scan-qr', async (qrData: string, callback: (response: { valid: boolean; message?: string }) => void) => {
                 try {
                     const isValid = await validateQr(qrData);
-
+                    
                     if (isValid) {
                         sendUserNotification(io, userId, {
                             title: "QR Code Validated",

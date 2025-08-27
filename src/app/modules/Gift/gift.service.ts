@@ -4,6 +4,7 @@ import { GiftModel } from './gift.model';
 import AppError from '../../errors/AppError';
 import QRCode from "qrcode";
 import twillow from 'twilio';
+import { sendUserNotification } from '../../helper/socketHelper';
 
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
@@ -30,7 +31,7 @@ const createGiftPayment = async (data: any) => {
         from: fromPhoneNumber,
         to: phoneNumber
     })
-    console.log(message);
+
 
 
     return { gift_id: gift._id };
@@ -43,7 +44,7 @@ const createPaymentIntent = async (giftId: string) => {
     const intent = await stripe.paymentIntents.create({
         amount: Math.round(gift.amount as number * 100),
         currency: 'gbp',
-        payment_method_types: ['card', 'apple_pay', 'google_pay'],
+        // payment_method_types: ['card', 'apple_pay', 'google_pay'],
         automatic_payment_methods: { enabled: true },
         metadata: {
             gift_id: gift._id.toString(),
@@ -62,8 +63,19 @@ const savePayment = async (giftId: string, transactionId: string, status: "pendi
     gift.transaction_id = transactionId;
 
     if (status === 'paid') {
-        const qrCode = await QRCode.toDataURL(`QR-{gift._id}`);
-        gift.qr_code = qrCode
+        // const qrCode = await QRCode.toDataURL(`QR-${gift.id}`);
+        // gift.qr_code = qrCode
+
+        const encodedId = Buffer.from(`${gift.id}`).toString('base64'); // encode
+        console.log("Encoded ID", encodedId);
+
+        const qrCode = await QRCode.toDataURL(`QR-${encodedId}`);
+        gift.qr_code = qrCode;
+
+        // // On decoding
+        const decodedId = Buffer.from(encodedId, 'base64').toString();
+        console.log("Decoded ID", decodedId); // original gift.id
+
     }
 
     await gift.save();
@@ -104,6 +116,7 @@ const redeemGift = async (giftId: string) => {
     if (gift.status === "redeemed") throw new Error("Gift already redeemed");
 
     gift.status = "redeemed";
+
     gift.redeemed_at = new Date();
     await gift.save();
 

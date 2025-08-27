@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gift Redemption</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .qr-scan input {
+            padding: 10px;
+            font-size: 16px;
+            width: 80%;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        .qr-scan button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .qr-scan button:hover {
+            background-color: #45a049;
+        }
+
+        .notifications {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            background-color: #f1f1f1;
+            border: 1px solid #ccc;
+        }
+
+        .notifications p {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .notification-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .notification-error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .notification-info {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gift Redemption</h1>
+
+        <!-- QR Code Scan Section -->
+        <div class="qr-scan">
+            <input type="text" id="qrInput" placeholder="Enter QR Code" />
+            <button id="scanBtn">Scan QR Code</button>
+        </div>
+
+        <!-- Notifications -->
+        <div id="notifications" class="notifications">
+            <p>No notifications yet...</p>
+        </div>
+    </div>
+
+    <!-- Socket.IO Script -->
+    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
+    <script>
+        const socket = io('http://localhost:5001'); // Replace with your server's address
+
+        // DOM elements
+        const qrInput = document.getElementById('qrInput');
+        const scanBtn = document.getElementById('scanBtn');
+        const notifications = document.getElementById('notifications');
+
+        // Event listener for scanning QR code
+        scanBtn.addEventListener('click', () => {
+            const qrCode = qrInput.value;
+
+            if (!qrCode) {
+                alert('Please enter a QR code.');
+                return;
+            }
+
+            // Emit the QR scan event to the server
+            socket.emit('scan-qr', qrCode, (response) => {
+                console.log(response);
+                if (response.valid) {
+                    showNotification('QR Code Validated', response.message, 'success');
+                } else {
+                    showNotification('Invalid QR Code', response.message, 'error');
+                }
+            });
+        });
+
+        // Display notifications
+        function showNotification(title, message, type) {
+            const notification = document.createElement('p');
+            notification.classList.add(`notification-${type}`);
+            notification.innerHTML = `<strong>${title}</strong>: ${message}`;
+            notifications.appendChild(notification);
+
+            // Remove notification after 5 seconds
+            setTimeout(() => {
+                notifications.removeChild(notification);
+            }, 5000);
+        }
+
+        // Listen for real-time notifications
+        socket.on('notification', (notificationData) => {
+            showNotification(notificationData.title, notificationData.message, notificationData.type);
+        });
+    </script>
+</body>
+</html>
