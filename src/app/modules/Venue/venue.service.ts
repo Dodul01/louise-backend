@@ -10,25 +10,71 @@ import { NotificationService } from "../Notification/notification.service";
 import { sendAdminNotification } from "../../helper/socketHelper";
 import { io } from "../../../server";
 import { generateVenueSerialId } from "./venue.utils";
+import { generateUserSerialId } from "../User/user.utils";
+import { User } from "../User/user.model";
+
+// const createVenueIntoDB = async (payload: TVenue) => {
+//     const serialId = await generateVenueSerialId();
+
+//     const newVenue = await Venue.create({ ...payload, serialId });
+
+//     if (newVenue) {
+//         NotificationService.createNotificationIntoDB({
+//             message: `New venue ${payload.name} has been successfully created.`,
+//             reciver: 'admin',
+//         });
+
+//         sendAdminNotification(io, {
+//             title: "New Venue Created",
+//             message: `New Venue ${payload.name} has been successfully created.`,
+//         });
+//     }
+//     return newVenue;
+// };
 
 const createVenueIntoDB = async (payload: TVenue) => {
+    const session = await mongoose.startSession();
+
+    session.startTransaction();
+
     const serialId = await generateVenueSerialId();
+    const userSerialId = await generateUserSerialId();
 
-    const newVenue = await Venue.create({ ...payload, serialId });
+    try {
 
-    if (newVenue) {
-        NotificationService.createNotificationIntoDB({
-            message: `New venue ${payload.name} has been successfully created.`,
-            reciver: 'admin',
-        });
+        const user = {
+            name: payload.name,
+            email: payload.email,
+            phone: "+000000000",
+            password: payload.password,
+            role: 'vendor'
+        };
+        const createUser = await User.create(
+            [{ ...user, serialId: userSerialId }],
+        );
 
-        sendAdminNotification(io, {
-            title: "New Venue Created",
-            message: `New Venue ${payload.name} has been successfully created.`,
-        });
+        const newVenue = await Venue.create({ ...payload, serialId });
+
+        if (newVenue) {
+            NotificationService.createNotificationIntoDB({
+                message: `New venue ${payload.name} has been successfully created.`,
+                reciver: 'admin',
+            });
+
+            sendAdminNotification(io, {
+                title: "New Venue Created",
+                message: `New Venue ${payload.name} has been successfully created.`,
+            });
+        }
+        return newVenue;
+
+    } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
+        throw error;
     }
-    return newVenue;
 };
+
 
 const getAllVenuesFromDB = async (query: RequestQuery) => {
     const venueQuery = Venue.find({ isDeleted: false }).sort({ createdAt: -1 });
@@ -49,7 +95,7 @@ const getAllVenuesWalletFromDB = async () => {
         STEP 4: calculate total commission (20%) earning.
         STEP 5: save the full data in db.
     */
-   
+
     const aggregated = await GiftModel.aggregate([
         {
             $lookup: {

@@ -3,6 +3,14 @@ import config from '../../config';
 import { GiftModel } from './gift.model';
 import AppError from '../../errors/AppError';
 import QRCode from "qrcode";
+import twillow from 'twilio';
+
+
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const fromPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
+
+const client = twillow(accountSid, authToken);
 
 const stripe = new Stripe(config.STRIPE_SECRET as string, {
     apiVersion: '2025-06-30.basil',
@@ -13,6 +21,17 @@ const createGiftPayment = async (data: any) => {
         ...data,
         status: 'pending',
     });
+
+    // send message 
+    const phoneNumber = data.phone_number;
+
+    const message = client.messages.create({
+        body: `${data.sender_name} sent you a gift!`,
+        from: fromPhoneNumber,
+        to: phoneNumber
+    })
+    console.log(message);
+
 
     return { gift_id: gift._id };
 };
@@ -93,7 +112,7 @@ const redeemGift = async (giftId: string) => {
 
 const scanQRFromDB = async (payload: any) => {
     const gift = await GiftModel.findById(payload.giftId)
- 
+
     if (!gift) throw new Error("Gift not found");
     if (gift.status === "redeemed") throw new Error("Gift already redeemed");
 

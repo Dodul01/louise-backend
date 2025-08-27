@@ -23,12 +23,13 @@ const createVenue = catchAsync(async (req: Request, res: Response) => {
 
     const validated = venueValidation.venueValidationSchema.parse(parsedBody);
 
+
     const venueToCreate = {
         ...validated,
         isDeleted: false,
         isFeatured: false
     };
-
+    
     const result = await VenueServices.createVenueIntoDB(venueToCreate);
 
     sendResponse(res, {
